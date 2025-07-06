@@ -39,7 +39,7 @@
         .main-container { display: flex; flex-direction: column; min-height: 100vh; }
         .top-nav { display: flex; align-items: center; padding: 0 20px; background-color: rgba(17, 47, 65, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: 0 2px 10px var(--shadow-color); }
         .logo-container { display: flex; align-items: center; gap: 15px; }
-        .logo-container .logo-placeholder { width: 40px; height: 40px; }
+        .logo-container .logo-placeholder { width: 40px; height: 40px; border-radius: 50%; }
         .logo-container h1 { font-size: 1.4em; margin: 0; color: var(--nav-text-color); }
         .nav-tabs { margin: 0 auto; overflow-x: auto; white-space: nowrap;}
         .nav-tabs .nav-link { background: none; border: none; color: var(--nav-text-color); padding: 20px 25px; font-size: 1em; cursor: pointer; text-decoration: none; position: relative; transition: color 0.3s, opacity 0.3s; opacity: 0.7; display: inline-block; }
@@ -50,11 +50,11 @@
         .action-btn { background: none; border: none; color: var(--nav-text-color); font-size: 1.2em; cursor: pointer; transition: color 0.3s; opacity: 0.8; }
         .action-btn:hover { color: var(--primary-color); opacity: 1; }
         .content-area { padding: 30px; padding-top: 100px; }
-        .content-section { padding: 50px 0; display: flex; flex-direction: column; justify-content: center; min-height: 80vh; }
+        .content-section { padding: 50px 0; display: flex; flex-direction: column; justify-content: center; min-height: 90vh; }
         .section-title { font-size: 2.5em; color: var(--primary-color); text-align: center; margin-bottom: 40px; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .card { background-color: var(--card-bg); padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px var(--shadow-color); backdrop-filter: blur(10px); border: 1px solid var(--border-color); transition: transform 0.3s, box-shadow 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .card.clickable:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); cursor: pointer; }
         .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; font-size: 1.2em; font-weight: 600; }
         .card-header .title { display: flex; align-items: center; }
         .card-header .title i { margin-right: 15px; width: 25px; text-align: center; color: var(--primary-color); }
@@ -83,13 +83,29 @@
         .feature-card i { font-size: 3em; margin-bottom: 15px; color: var(--primary-color); }
         .feature-card h4 { margin-bottom: 10px; font-size: 1.2em; }
         .feature-card p { font-size: 0.95em; opacity: 0.8; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { display: flex; flex-direction: column; gap: 20px; background-color: var(--dark-bg); color: var(--text-color); padding: 40px; border-radius: 15px; width: 90%; max-width: 800px; max-height: 80vh; position: relative; transform: scale(0.9); transition: transform 0.3s; border: 1px solid var(--border-color);}
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-close-btn { position: absolute; top: 15px; right: 20px; font-size: 2.5em; color: var(--text-color); cursor: pointer; border: none; background: none; line-height: 1;}
+        .modal-svg { text-align: center; }
+        .modal-svg svg { max-width: 100%; height: 150px; }
+        .modal-text { overflow-y: auto; padding-right: 15px; }
+        .modal-text h2 { color: var(--primary-color); margin-top: 0; }
+        .modal-text p { font-size: 0.95em; }
+        .connection-indicator { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'Source Code Pro', monospace; }
+        .status-light { width: 12px; height: 12px; border-radius: 50%; background-color: #555; transition: background-color 0.3s, box-shadow 0.3s; }
+        .status-light.ok { background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }
+        .status-light.warn { background-color: var(--warning-color); box-shadow: 0 0 8px var(--warning-color); }
+        .status-light.error { background-color: var(--critical-color); box-shadow: 0 0 8px var(--critical-color); }
+        .status-light.info { background-color: var(--info-color-blue); box-shadow: 0 0 8px var(--info-color-blue); }
     </style>
 </head>
 <body>
     <div class="main-container">
         <header class="top-nav">
             <div class="logo-container">
-                <img class="logo-placeholder" src="https://placehold.co/60x60/073B4C/2ecc71?text=E" alt="ECOSCYCLE Logo">
+                <img class="logo-placeholder" src="https://raw.githubusercontent.com/USER/REPO/main/logo11112.png" alt="ECOSCYCLE Logo" onerror="this.onerror=null;this.src='https://placehold.co/60x60/073B4C/2ecc71?text=E';">
                 <h1>ECOSCYCLE</h1>
             </div>
             <nav class="nav-tabs">
@@ -112,21 +128,20 @@
                     <p class="intro-text">
                         ECOSCYCLE, şehirlerimizi iklim değişikliğinin etkilerine karşı daha dirençli hale getirmeyi amaçlayan, sensör verileriyle yönetilen akıllı bir yeşil altyapı projesidir. Sistem, yağmur suyunu toplayıp arıtarak ve hava kalitesini biyolojik olarak iyileştirerek sürdürülebilir bir kentsel çevre oluşturur.
                     </p>
-                    <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-                        <div class="card feature-card">
-                            <i class="fas fa-recycle"></i>
-                            <h4>Akıllı Su Yönetimi</h4>
-                            <p>Yağmur suyunu toplar, filtreler ve toprak nemi sensörlerine göre bitkilerin sulanmasında kullanarak su israfını önler.</p>
+                    <div class="grid-container" style="grid-template-columns: 1fr 1fr;">
+                        <div class="card clickable" data-modal-id="modal-microalgae">
+                            <div class="feature-card">
+                                <i class="fas fa-leaf"></i>
+                                <h4>Mikroalgler ve Oksijen Üretimi</h4>
+                                <p>Havadaki karbondioksiti emen ve yerine temiz oksijen üreten biyolojik reaktörlerin çalışma prensibini öğrenin.</p>
+                            </div>
                         </div>
-                        <div class="card feature-card">
-                            <i class="fas fa-leaf"></i>
-                            <h4>Biyolojik Hava Arıtma</h4>
-                            <p>Mikroalg reaktörleri ile havadaki CO2'yi emer ve oksijen üreterek şehirlerdeki hava kalitesini doğal yollarla artırır.</p>
-                        </div>
-                        <div class="card feature-card">
-                            <i class="fas fa-chart-pie"></i>
-                            <h4>Canlı Veri Analizi</h4>
-                            <p>Tüm sistem, anlık olarak toplanan sensör verileriyle izlenir, analiz edilir ve bu panel üzerinden şeffaf bir şekilde sunulur.</p>
+                        <div class="card clickable" data-modal-id="modal-raingarden">
+                            <div class="feature-card">
+                                <i class="fas fa-tint"></i>
+                                <h4>Akıllı Yağmur Bahçesi</h4>
+                                <p>Yağmur suyunu nasıl topladığımızı, filtrelediğimizi ve akıllı sensörlerle verimli bir şekilde kullandığımızı keşfedin.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -214,14 +229,52 @@
                     <h2 class="section-title">Terminal ve Sistem Günlüğü</h2>
                      <div class="diagnostic-card">
                         <h3><i class="fas fa-satellite-dish"></i> Bağlantı Durumu</h3>
-                        <p id="connection-status-terminal">Sistem başlatılıyor...</p>
-                        <h3><i class="fas fa-history"></i> Sistem Günlüğü</h3>
+                        <div class="connection-indicator">
+                            <span id="status-light-terminal" class="status-light"></span>
+                            <span id="connection-status-terminal">Sistem başlatılıyor...</span>
+                        </div>
+                        <h3 style="margin-top: 20px;"><i class="fas fa-history"></i> Sistem Günlüğü</h3>
                         <div class="system-log" id="system-log-output-terminal"></div>
                     </div>
                 </div>
             </section>
         </main>
     </div>
+    
+    <!-- Modals -->
+    <div id="modal-microalgae" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <div class="modal-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="b-modal" x1="50%" x2="50%" y1="0%" y2="100%"><stop offset="0%" stop-color="#88f"/><stop offset="100%" stop-color="#66f"/></linearGradient></defs><path fill="#c7ecee" d="M100 130a45 45 0 00-45 45v5h90v-5a45 45 0 00-45-45z"/><path fill="url(#b-modal)" d="M100 130a45 45 0 0145 45v-5a40 40 0 00-80 0v5a45 45 0 0135-45z"/><path fill="#9bceb7" d="M57 140a3 3 0 11-6 0 3 3 0 016 0zm9 13a3 3 0 11-6 0 3 3 0 016 0zm14-5a3 3 0 11-6 0 3 3 0 016 0zm11 11a3 3 0 11-6 0 3 3 0 016 0zm12-7a3 3 0 11-6 0 3 3 0 016 0zm10 9a3 3 0 11-6 0 3 3 0 016 0zm-60-3a4 4 0 11-8 0 4 4 0 018 0zm11 14a4 4 0 11-8 0 4 4 0 018 0zm13-6a4 4 0 11-8 0 4 4 0 018 0zm12 12a4 4 0 11-8 0 4 4 0 018 0zm11-4a4 4 0 11-8 0 4 4 0 018 0zm12 10a4 4 0 11-8 0 4 4 0 018 0z"/><path fill="#fff" d="M60 20 L 140 20 L 140 130 L 60 130 Z" opacity="0.2" rx="10"/><path fill="none" stroke="#66f" stroke-width="4" d="M100 20v110" stroke-linecap="round"/><path fill="#66f" d="M100 20l-15 15h30l-15-15z M100 130l-15-15h30l-15 15z"/><text x="110" y="80" font-family="Poppins" font-size="12" fill="#333">CO2</text><text x="80" y="80" font-family="Poppins" font-size="12" fill="#333" text-anchor="end">O2</text></svg>
+            </div>
+            <div class="modal-text">
+                <h2>Mikroalg Biyoreaktörü</h2>
+                <p>Bu sistem, atmosferdeki karbondioksiti (CO2) emmek ve oksijen (O2) üretmek için mikroalgleri kullanır. Şehirlerdeki hava kalitesini iyileştirmek için biyolojik bir çözüm sunar.</p>
+                <h3>Çalışma Prensibi</h3>
+                <p>1. Hava, reaktörün içine pompalanır.<br>2. Mikroalgler, fotosentez yoluyla CO2'yi tüketir ve besin olarak kullanır.<br>3. Fotosentezin bir yan ürünü olarak temiz oksijen atmosfere geri salınır.<br>4. Sistem, ışık ve sıcaklık gibi sensörlerle sürekli olarak izlenerek alglerin en verimli şekilde çalışması sağlanır.</p>
+            </div>
+        </div>
+    </div>
+    <div id="modal-raingarden" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+             <div class="modal-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path fill="#b08968" d="M0 160h200v20H0z"/><path fill="#8c6a4d" d="M0 140h200v20H0z"/><path fill="#e0ac69" d="M0 120h200v20H0z"/><path fill="#2ecc71" d="M50 120 l-10 -20 h20z m40 0 l-10 -30 h20z m60 0 l-10 -25 h20z "/><path fill="#27ae60" d="M30 120 l-10-25 h20z m70 0 l-10 -20 h20z m50 0 l-10-35 h20z"/><path fill="none" stroke="#3498db" stroke-width="3" stroke-dasharray="5 5" d="M40 40v80m120-80v80m-60-90v90"/><path fill="#3498db" d="M40 40l-10 10h20z m120 0l-10 10h20z m-60-10l-10 10h20z"/></svg>
+            </div>
+            <div class="modal-text">
+                <h2>Akıllı Yağmur Bahçesi</h2>
+                <p>Yağmur bahçeleri, yağmur suyunu toplamak, filtrelemek ve yeraltı sularını beslemek için tasarlanmış özel bitki ve toprak katmanlarından oluşan yeşil altyapı çözümleridir.</p>
+                <h3>Faydaları</h3>
+                <p>1. <strong>Sel Kontrolü:</strong> Yoğun yağışlarda şehir kanalizasyon sisteminin yükünü azaltır.<br>
+                   2. <strong>Su Filtrasyonu:</strong> Toprak ve bitki kökleri, yağmur suyundaki kirleticileri doğal olarak filtreler.<br>
+                   3. <strong>Biyoçeşitlilik:</strong> Kuşlar ve kelebekler gibi canlılar için habitat oluşturur.<br>
+                   4. <strong>Yeraltı Suyu Beslemesi:</strong> Filtrelenen suyun yavaşça toprağa sızmasını sağlayarak yeraltı su kaynaklarını yeniler.</p>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="background-music" loop src="https://cdn.pixabay.com/audio/2022/10/18/audio_731a257261.mp3"></audio>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -231,17 +284,19 @@
         const state = {
             db: null, auth: null, unsubscribe: null, simulationInterval: null,
             totalWaterCollected: 125.5, totalCo2Reduced: 5.2, lastUpdateTime: Date.now(),
-            charts: {}, hasReceivedRealData: false, musicPlayer: null, isMusicPlaying: false
+            charts: {}, hasReceivedRealData: false, isMusicPlaying: false,
+            clickSynth: null, isToneStarted: false
         };
 
         const DOMElements = {
-            statusEl: document.getElementById('connection-status'),
+            statusLightTerminal: document.getElementById('status-light-terminal'),
             statusElTerminal: document.getElementById('connection-status-terminal'),
-            logOutput: document.getElementById('system-log-output'),
             logOutputTerminal: document.getElementById('system-log-output-terminal'),
             navLinks: document.querySelectorAll('.nav-link'),
             weatherTableBody: document.querySelector('#weather-table tbody'),
             musicBtn: document.getElementById('music-toggle-btn'),
+            bgMusic: document.getElementById('background-music'),
+            modalTriggers: document.querySelectorAll('.clickable')
         };
 
         document.addEventListener('DOMContentLoaded', main);
@@ -251,20 +306,24 @@
             initializeFirebase();
             initializeNavigation();
             initializeCharts();
-            initializeMusic();
+            initializeAudio();
             updateUsageStats();
             setInterval(updateUsageStats, 15000);
         }
 
         function initializeFirebase() {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecoscycle-default';
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+            const firebaseConfig = {
+                apiKey: "AIzaSyBzyd-zxkl2HnAMl6uIths3R8MblYboX_Y",
+                authDomain: "ecoscycle-akilli-yesil-altyapi.firebaseapp.com",
+                databaseURL: "https://ecoscycle-akilli-yesil-altyapi-default-rtdb.firebaseio.com",
+                projectId: "ecoscycle-akilli-yesil-altyapi",
+                storageBucket: "ecoscycle-akilli-yesil-altyapi.appspot.com",
+                messagingSenderId: "149002107822",
+                appId: "1:149002107822:web:68a3f136f74689737aa63f",
+                measurementId: "G-23T568M3PD"
+            };
             const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-            if (!firebaseConfig) {
-                handleConnectionError('Firebase yapılandırması eksik.');
-                return;
-            }
             try {
                 const app = initializeApp(firebaseConfig);
                 state.auth = getAuth(app);
@@ -287,7 +346,7 @@
         }
 
         function initializeAppLogic() {
-            updateConnectionStatus('Firebase\'e bağlanıldı. Cihaz verisi bekleniyor...', 'info');
+            updateConnectionStatus('Firebase\'e bağlanılıyor...', 'info');
             startRealtimeListener();
             updateWeatherTable();
             setTimeout(() => {
@@ -298,8 +357,7 @@
         }
 
         function startRealtimeListener() {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecoscycle-default';
-            const docPath = `/artifacts/${appId}/public/data/device/live`;
+            const docPath = `ecoscycle-default/public/data/device/live/live`; // FIX: Corrected path
             logEvent(`Veri dinleyicisi başlatıldı: ${docPath}`);
             state.unsubscribe = onSnapshot(doc(state.db, docPath), (docSnap) => {
                 if (!state.hasReceivedRealData) {
@@ -312,7 +370,7 @@
                     }
                 }
                 if (docSnap.exists()) {
-                    updateConnectionStatus('Canlı veri alınıyor...', 'ok');
+                    updateConnectionStatus('Firebase SDK', 'ok');
                     updateUI(docSnap.data());
                 } else {
                     handleConnectionError('Cihaz veri yolu bulunamadı.');
@@ -324,7 +382,7 @@
         
         function handleConnectionError(errorMessage) {
             logEvent(errorMessage, 'error');
-            updateConnectionStatus(errorMessage, 'error');
+            updateConnectionStatus('Bağlantı Hatası', 'error');
             if (!state.simulationInterval) startSimulation();
         }
 
@@ -339,7 +397,7 @@
                     airQuality: 300 + Math.floor(Math.random() * 1000), tds: 50 + Math.floor(Math.random() * 200),
                     rain: Math.floor(1000 + Math.random() * 3095)
                 };
-                updateConnectionStatus('Simülasyon Modu Aktif', 'warn');
+                updateConnectionStatus('SML Mode', 'warn');
                 updateUI(simulatedData);
             };
             run();
@@ -350,6 +408,7 @@
             DOMElements.navLinks.forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
+                    if (state.clickSynth) state.clickSynth.triggerAttackRelease("C2", "8n");
                     const targetId = link.getAttribute('href');
                     const target = document.querySelector(targetId);
                     if (target) {
@@ -360,6 +419,21 @@
                 });
             });
             document.querySelector('.nav-link[href="#overview"]')?.classList.add('active');
+            
+            DOMElements.modalTriggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const modalId = trigger.dataset.modalId;
+                    document.getElementById(modalId)?.classList.add('active');
+                });
+            });
+
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay || e.target.classList.contains('modal-close-btn')) {
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
         }
 
         function updateUI(data) {
@@ -429,16 +503,10 @@
         }
 
         function updateConnectionStatus(message, type) {
-            const colorMap = { ok: 'var(--primary-color)', info: 'var(--info-color-blue)', warn: 'var(--warning-color)', error: 'var(--critical-color)' };
-            const color = colorMap[type] || 'var(--text-color)';
-            if(DOMElements.statusEl) {
-                DOMElements.statusEl.textContent = message;
-                DOMElements.statusEl.style.color = color;
-            }
-            if(DOMElements.statusElTerminal) {
-                DOMElements.statusElTerminal.textContent = message;
-                DOMElements.statusElTerminal.style.color = color;
-            }
+            const lightEl = DOMElements.statusLightTerminal;
+            const textEl = DOMElements.statusElTerminal;
+            lightEl.className = `status-light ${type}`;
+            textEl.textContent = message;
         }
 
         function initializeCharts() {
@@ -500,37 +568,34 @@
         function logEvent(message, type = 'info') {
             const colorMap = { info: 'var(--text-color)', warn: 'var(--warning-color)', error: 'var(--critical-color)' };
             const createLogEntry = () => `<div class="log-entry"><span class="log-time">${new Date().toLocaleTimeString()}</span> <span style="color: ${colorMap[type]}">${message}</span></div>`;
-            if (DOMElements.logOutput) DOMElements.logOutput.innerHTML += createLogEntry();
             if (DOMElements.logOutputTerminal) DOMElements.logOutputTerminal.innerHTML += createLogEntry();
-            if (DOMElements.logOutput) DOMElements.logOutput.scrollTop = DOMElements.logOutput.scrollHeight;
             if (DOMElements.logOutputTerminal) DOMElements.logOutputTerminal.scrollTop = DOMElements.logOutputTerminal.scrollHeight;
         }
 
-        function initializeMusic() {
-            const synth = new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "sine" },
-                envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 1 }
-            }).toDestination();
-            const pattern = new Tone.Pattern((time, note) => {
-                synth.triggerAttackRelease(note, "8n", time);
-            }, ["C4", "E4", "G4", "B4"], "randomWalk");
-            pattern.interval = "4n";
-            state.musicPlayer = pattern;
-
-            DOMElements.musicBtn.addEventListener('click', async () => {
+        function initializeAudio() {
+            state.clickSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination();
+            
+            const startMusic = async () => {
                 await Tone.start();
+                DOMElements.bgMusic.play();
+                DOMElements.musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                state.isMusicPlaying = true;
+                logEvent('Müzik başlatıldı.');
+                document.body.removeEventListener('click', startMusic);
+            };
+            document.body.addEventListener('click', startMusic, { once: true });
+
+            DOMElements.musicBtn.addEventListener('click', () => {
                 if (state.isMusicPlaying) {
-                    state.musicPlayer.stop();
-                    Tone.Transport.stop();
+                    DOMElements.bgMusic.pause();
                     DOMElements.musicBtn.innerHTML = '<i class="fas fa-volume-off"></i>';
                 } else {
-                    Tone.Transport.start();
-                    state.musicPlayer.start(0);
+                    DOMElements.bgMusic.play();
                     DOMElements.musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
                 }
                 state.isMusicPlaying = !state.isMusicPlaying;
             });
-            logEvent('Müzik sistemi hazır.');
+            logEvent('Ses sistemi hazır.');
         }
 
         const convertToPercentage = (value, inverted = false) => {
