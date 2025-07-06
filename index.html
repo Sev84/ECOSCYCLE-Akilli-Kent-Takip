@@ -81,4 +81,535 @@
         .intro-text { text-align: center; max-width: 800px; margin: 0 auto 40px auto; line-height: 1.7; opacity: 0.9; }
         .feature-card { text-align: center; }
         .feature-card i { font-size: 3em; margin-bottom: 15px; color: var(--primary-color); }
-        .feature-c
+        .feature-card h4 { margin-bottom: 10px; font-size: 1.2em; }
+        .feature-card p { font-size: 0.95em; opacity: 0.8; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { display: flex; flex-direction: column; gap: 20px; background-color: var(--dark-bg); color: var(--text-color); padding: 40px; border-radius: 15px; width: 90%; max-width: 800px; max-height: 80vh; position: relative; transform: scale(0.9); transition: transform 0.3s; border: 1px solid var(--border-color);}
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-close-btn { position: absolute; top: 15px; right: 20px; font-size: 2.5em; color: var(--text-color); cursor: pointer; border: none; background: none; line-height: 1;}
+        .modal-svg { text-align: center; }
+        .modal-svg svg { max-width: 100%; height: 150px; }
+        .modal-text { overflow-y: auto; padding-right: 15px; }
+        .modal-text h2 { color: var(--primary-color); margin-top: 0; }
+        .modal-text p { font-size: 0.95em; }
+        .connection-indicator { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'Source Code Pro', monospace; }
+        .status-light { width: 12px; height: 12px; border-radius: 50%; background-color: #555; transition: background-color 0.3s, box-shadow 0.3s; }
+        .status-light.ok { background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }
+        .status-light.warn { background-color: var(--warning-color); box-shadow: 0 0 8px var(--warning-color); }
+        .status-light.error { background-color: var(--critical-color); box-shadow: 0 0 8px var(--critical-color); }
+        .status-light.info { background-color: var(--info-color-blue); box-shadow: 0 0 8px var(--info-color-blue); }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="top-nav">
+            <div class="logo-container">
+                <img class="logo-placeholder" src="https://raw.githubusercontent.com/USER/REPO/main/logo11112.png" alt="ECOSCYCLE Logo" onerror="this.onerror=null;this.src='https://placehold.co/60x60/073B4C/2ecc71?text=E';">
+                <h1>ECOSCYCLE</h1>
+            </div>
+            <nav class="nav-tabs">
+                <a href="#overview" class="nav-link">Genel Bakış</a>
+                <a href="#status" class="nav-link">Sistem Durumu</a>
+                <a href="#stats" class="nav-link">İstatistikler</a>
+                <a href="#graphs" class="nav-link">Anlık Grafikler</a>
+                <a href="#weather" class="nav-link">Hava Durumu</a>
+                <a href="#terminal" class="nav-link">Terminal</a>
+            </nav>
+            <div class="top-nav-actions">
+                <button id="music-toggle-btn" class="action-btn" title="Müziği Aç/Kapat"><i class="fas fa-volume-off"></i></button>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <section id="overview" class="content-section">
+                <div style="width: 100%; max-width: 1200px; margin: 0 auto;">
+                    <h2 class="section-title">Akıllı Şehirler İçin Ekolojik Altyapı</h2>
+                    <p class="intro-text">
+                        ECOSCYCLE, şehirlerimizi iklim değişikliğinin etkilerine karşı daha dirençli hale getirmeyi amaçlayan, sensör verileriyle yönetilen akıllı bir yeşil altyapı projesidir. Sistem, yağmur suyunu toplayıp arıtarak ve hava kalitesini biyolojik olarak iyileştirerek sürdürülebilir bir kentsel çevre oluşturur.
+                    </p>
+                    <div class="grid-container" style="grid-template-columns: 1fr 1fr;">
+                        <div class="card clickable" data-modal-id="modal-microalgae">
+                            <div class="feature-card">
+                                <i class="fas fa-leaf"></i>
+                                <h4>Mikroalgler ve Oksijen Üretimi</h4>
+                                <p>Havadaki karbondioksiti emen ve yerine temiz oksijen üreten biyolojik reaktörlerin çalışma prensibini öğrenin.</p>
+                            </div>
+                        </div>
+                        <div class="card clickable" data-modal-id="modal-raingarden">
+                            <div class="feature-card">
+                                <i class="fas fa-tint"></i>
+                                <h4>Akıllı Yağmur Bahçesi</h4>
+                                <p>Yağmur suyunu nasıl topladığımızı, filtrelediğimizi ve akıllı sensörlerle verimli bir şekilde kullandığımızı keşfedin.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="status" class="content-section">
+                <div style="width: 100%; max-width: 1200px; margin: 0 auto;">
+                    <h2 class="section-title">Anlık Sistem Durumu</h2>
+                    <div class="grid-container" style="grid-template-columns: 1fr 1fr;">
+                        <div class="card">
+                            <div class="card-header"><div class="title"><i class="fas fa-water"></i><span>Su ve Toprak Durumu</span></div></div>
+                            <div class="status-card">
+                                <i id="water-status-icon" class="fas fa-question-circle"></i>
+                                <p id="water-status-text">Veri bekleniyor...</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><div class="title"><i class="fas fa-leaf"></i><span>Hava ve Biyoreaktör Durumu</span></div></div>
+                            <div class="status-card">
+                                <i id="air-status-icon" class="fas fa-question-circle"></i>
+                                <p id="air-status-text">Veri bekleniyor...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="stats" class="content-section">
+                 <div style="width: 100%; max-width: 1200px; margin: 0 auto;">
+                    <h2 class="section-title">Canlı Verimlilik İstatistikleri</h2>
+                    <div class="grid-container" style="grid-template-columns: 1fr 1fr;">
+                        <div class="card">
+                            <div class="card-header"><div class="title"><i class="fas fa-seedling"></i><span>Çevresel Etki</span></div></div>
+                            <table class="stats-table">
+                                <tbody>
+                                    <tr><td>Toplam Toplanan Su</td><td id="stats-water-collected">-- L</td></tr>
+                                    <tr><td>Anlık Filtrasyon Oranı</td><td id="stats-filter-rate">-- %</td></tr>
+                                    <tr><td>Toplam Azaltılan CO2</td><td id="stats-co2-reduced">-- kg</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><div class="title"><i class="fas fa-chart-line"></i><span>Uygulama Kullanımı</span></div></div>
+                            <table class="stats-table">
+                                <tbody>
+                                    <tr><td>Aktif Kullanıcı (Tahmini)</td><td id="stats-daily-users">--</td></tr>
+                                    <tr><td>Oturum Süresi (Tahmini)</td><td id="stats-session-time">-- dk</td></tr>
+                                    <tr><td>Popüler Sekme (Tahmini)</td><td id="stats-popular-tab">--</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="graphs" class="content-section">
+                <div style="width: 100%; max-width: 1400px; margin: 0 auto;">
+                    <h2 class="section-title">Anlık Sensör Grafikleri</h2>
+                    <div class="grid-container">
+                        <div class="card"><div class="card-header"><div class="title"><i class="fas fa-sun"></i><span>Işık Şiddeti</span></div></div><div class="card-body"><div class="sensor-value" id="light-value">--</div><div class="chart-container"><canvas id="light-chart"></canvas></div></div></div>
+                        <div class="card"><div class="card-header"><div class="title"><i class="fas fa-mountain-sun"></i><span>Toprak Nemi</span></div></div><div class="card-body"><div class="sensor-value" id="soil-value">--</div><div class="chart-container"><canvas id="soil-chart"></canvas></div></div></div>
+                        <div class="card"><div class="card-header"><div class="title"><i class="fas fa-thermometer-half"></i><span>Sıcaklık</span></div></div><div class="card-body"><div class="sensor-value" id="temperature-value">--</div><div class="chart-container"><canvas id="temperature-chart"></canvas></div></div></div>
+                        <div class="card"><div class="card-header"><div class="title"><i class="fas fa-wind"></i><span>Hava Kalitesi</span></div></div><div class="card-body"><div class="sensor-value" id="air-quality-value">--</div><div class="chart-container"><canvas id="air-quality-chart"></canvas></div></div></div>
+                        <div class="card"><div class="card-header"><div class="title"><i class="fas fa-cloud-rain"></i><span>Yağmur</span></div></div><div class="card-body"><div class="sensor-value" id="rain-value">--</div></div></div>
+                        <div class="card"><div class="card-header"><div class="title"><i class="fas fa-vial"></i><span>TDS</span></div></div><div class="card-body"><div class="sensor-value" id="tds-value">--</div></div></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="weather" class="content-section">
+                <div style="width: 100%; max-width: 1000px; margin: 0 auto;">
+                    <h2 class="section-title">Türkiye Canlı Hava Durumu</h2>
+                    <div class="card">
+                        <table class="weather-table" id="weather-table">
+                            <thead><tr><th style="padding:15px; text-align:left;">Şehir</th><th>Durum</th><th>Sıcaklık</th><th>Nem</th><th>Rüzgar</th></tr></thead>
+                            <tbody><tr><td colspan="5">Veriler yükleniyor...</td></tr></tbody>
+                        </table>
+                        <p class="api-note">Hava durumu verileri wttr.in tarafından sağlanmaktadır.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="terminal" class="content-section">
+                <div style="width: 100%; max-width: 1200px; margin: 0 auto;">
+                    <h2 class="section-title">Terminal ve Sistem Günlüğü</h2>
+                     <div class="diagnostic-card">
+                        <h3><i class="fas fa-satellite-dish"></i> Bağlantı Durumu</h3>
+                        <div class="connection-indicator">
+                            <span id="status-light-terminal" class="status-light"></span>
+                            <span id="connection-status-terminal">Sistem başlatılıyor...</span>
+                        </div>
+                        <h3 style="margin-top: 20px;"><i class="fas fa-history"></i> Sistem Günlüğü</h3>
+                        <div class="system-log" id="system-log-output-terminal"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Modals -->
+    <div id="modal-microalgae" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <div class="modal-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="b-modal" x1="50%" x2="50%" y1="0%" y2="100%"><stop offset="0%" stop-color="#88f"/><stop offset="100%" stop-color="#66f"/></linearGradient></defs><path fill="#c7ecee" d="M100 130a45 45 0 00-45 45v5h90v-5a45 45 0 00-45-45z"/><path fill="url(#b-modal)" d="M100 130a45 45 0 0145 45v-5a40 40 0 00-80 0v5a45 45 0 0135-45z"/><path fill="#9bceb7" d="M57 140a3 3 0 11-6 0 3 3 0 016 0zm9 13a3 3 0 11-6 0 3 3 0 016 0zm14-5a3 3 0 11-6 0 3 3 0 016 0zm11 11a3 3 0 11-6 0 3 3 0 016 0zm12-7a3 3 0 11-6 0 3 3 0 016 0zm10 9a3 3 0 11-6 0 3 3 0 016 0zm-60-3a4 4 0 11-8 0 4 4 0 018 0zm11 14a4 4 0 11-8 0 4 4 0 018 0zm13-6a4 4 0 11-8 0 4 4 0 018 0zm12 12a4 4 0 11-8 0 4 4 0 018 0zm11-4a4 4 0 11-8 0 4 4 0 018 0zm12 10a4 4 0 11-8 0 4 4 0 018 0z"/><path fill="#fff" d="M60 20 L 140 20 L 140 130 L 60 130 Z" opacity="0.2" rx="10"/><path fill="none" stroke="#66f" stroke-width="4" d="M100 20v110" stroke-linecap="round"/><path fill="#66f" d="M100 20l-15 15h30l-15-15z M100 130l-15-15h30l-15 15z"/><text x="110" y="80" font-family="Poppins" font-size="12" fill="#333">CO2</text><text x="80" y="80" font-family="Poppins" font-size="12" fill="#333" text-anchor="end">O2</text></svg>
+            </div>
+            <div class="modal-text">
+                <h2>Mikroalg Biyoreaktörü</h2>
+                <p>Bu sistem, atmosferdeki karbondioksiti (CO2) emmek ve oksijen (O2) üretmek için mikroalgleri kullanır. Şehirlerdeki hava kalitesini iyileştirmek için biyolojik bir çözüm sunar.</p>
+                <h3>Çalışma Prensibi</h3>
+                <p>1. Hava, reaktörün içine pompalanır.<br>2. Mikroalgler, fotosentez yoluyla CO2'yi tüketir ve besin olarak kullanır.<br>3. Fotosentezin bir yan ürünü olarak temiz oksijen atmosfere geri salınır.<br>4. Sistem, ışık ve sıcaklık gibi sensörlerle sürekli olarak izlenerek alglerin en verimli şekilde çalışması sağlanır.</p>
+            </div>
+        </div>
+    </div>
+    <div id="modal-raingarden" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+             <div class="modal-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path fill="#b08968" d="M0 160h200v20H0z"/><path fill="#8c6a4d" d="M0 140h200v20H0z"/><path fill="#e0ac69" d="M0 120h200v20H0z"/><path fill="#2ecc71" d="M50 120 l-10 -20 h20z m40 0 l-10 -30 h20z m60 0 l-10 -25 h20z "/><path fill="#27ae60" d="M30 120 l-10-25 h20z m70 0 l-10 -20 h20z m50 0 l-10-35 h20z"/><path fill="none" stroke="#3498db" stroke-width="3" stroke-dasharray="5 5" d="M40 40v80m120-80v80m-60-90v90"/><path fill="#3498db" d="M40 40l-10 10h20z m120 0l-10 10h20z m-60-10l-10 10h20z"/></svg>
+            </div>
+            <div class="modal-text">
+                <h2>Akıllı Yağmur Bahçesi</h2>
+                <p>Yağmur bahçeleri, yağmur suyunu toplamak, filtrelemek ve yeraltı sularını beslemek için tasarlanmış özel bitki ve toprak katmanlarından oluşan yeşil altyapı çözümleridir.</p>
+                <h3>Faydaları</h3>
+                <p>1. <strong>Sel Kontrolü:</strong> Yoğun yağışlarda şehir kanalizasyon sisteminin yükünü azaltır.<br>
+                   2. <strong>Su Filtrasyonu:</strong> Toprak ve bitki kökleri, yağmur suyundaki kirleticileri doğal olarak filtreler.<br>
+                   3. <strong>Biyoçeşitlilik:</strong> Kuşlar ve kelebekler gibi canlılar için habitat oluşturur.<br>
+                   4. <strong>Yeraltı Suyu Beslemesi:</strong> Filtrelenen suyun yavaşça toprağa sızmasını sağlayarak yeraltı su kaynaklarını yeniler.</p>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="background-music" loop src="https://cdn.pixabay.com/audio/2022/10/18/audio_731a257261.mp3"></audio>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const state = {
+            db: null, auth: null, unsubscribe: null, simulationInterval: null,
+            totalWaterCollected: 125.5, totalCo2Reduced: 5.2, lastUpdateTime: Date.now(),
+            charts: {}, hasReceivedRealData: false, isMusicPlaying: false,
+            clickSynth: null, isToneStarted: false
+        };
+
+        const DOMElements = {
+            statusLightTerminal: document.getElementById('status-light-terminal'),
+            statusElTerminal: document.getElementById('connection-status-terminal'),
+            logOutputTerminal: document.getElementById('system-log-output-terminal'),
+            navLinks: document.querySelectorAll('.nav-link'),
+            weatherTableBody: document.querySelector('#weather-table tbody'),
+            musicBtn: document.getElementById('music-toggle-btn'),
+            bgMusic: document.getElementById('background-music'),
+            modalTriggers: document.querySelectorAll('.clickable')
+        };
+
+        document.addEventListener('DOMContentLoaded', main);
+
+        function main() {
+            logEvent('Arayüz başlatılıyor...');
+            initializeFirebase();
+            initializeNavigation();
+            initializeCharts();
+            initializeAudio();
+            updateUsageStats();
+            setInterval(updateUsageStats, 15000);
+        }
+
+        function initializeFirebase() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBzyd-zxkl2HnAMl6uIths3R8MblYboX_Y",
+                authDomain: "ecoscycle-akilli-yesil-altyapi.firebaseapp.com",
+                databaseURL: "https://ecoscycle-akilli-yesil-altyapi-default-rtdb.firebaseio.com",
+                projectId: "ecoscycle-akilli-yesil-altyapi",
+                storageBucket: "ecoscycle-akilli-yesil-altyapi.appspot.com",
+                messagingSenderId: "149002107822",
+                appId: "1:149002107822:web:68a3f136f74689737aa63f",
+                measurementId: "G-23T568M3PD"
+            };
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                state.auth = getAuth(app);
+                state.db = getFirestore(app);
+                logEvent('Firebase SDK başlatıldı.');
+                onAuthStateChanged(state.auth, user => {
+                    if (user) {
+                        logEvent(`Kimlik doğrulandı: ${user.isAnonymous ? 'Anonim' : 'Kullanıcı'}`);
+                        initializeAppLogic();
+                    } else {
+                        logEvent('Kimlik doğrulanıyor...');
+                        signInAnonymously(state.auth).catch(() => {
+                            if (initialAuthToken) signInWithCustomToken(state.auth, initialAuthToken);
+                        });
+                    }
+                });
+            } catch (e) {
+                handleConnectionError(`Firebase başlatılamadı: ${e.message}`);
+            }
+        }
+
+        function initializeAppLogic() {
+            updateConnectionStatus('Firebase\'e bağlanılıyor...', 'info');
+            startRealtimeListener();
+            updateWeatherTable();
+            setTimeout(() => {
+                if (!state.hasReceivedRealData) {
+                    handleConnectionError('Gerçek veri alınamadı. Simülasyon başlatılıyor.');
+                }
+            }, 5000);
+        }
+
+        function startRealtimeListener() {
+            const docPath = `ecoscycle-default/public/data/device/live/live`; // FIX: Corrected path
+            logEvent(`Veri dinleyicisi başlatıldı: ${docPath}`);
+            state.unsubscribe = onSnapshot(doc(state.db, docPath), (docSnap) => {
+                if (!state.hasReceivedRealData) {
+                    logEvent('İlk canlı veri paketi başarıyla alındı!');
+                    state.hasReceivedRealData = true;
+                    if (state.simulationInterval) {
+                        clearInterval(state.simulationInterval);
+                        state.simulationInterval = null;
+                        logEvent('Simülasyon durduruldu, canlı veriye geçildi.');
+                    }
+                }
+                if (docSnap.exists()) {
+                    updateConnectionStatus('Firebase SDK', 'ok');
+                    updateUI(docSnap.data());
+                } else {
+                    handleConnectionError('Cihaz veri yolu bulunamadı.');
+                }
+            }, (error) => {
+                handleConnectionError(`Veri dinleme hatası: ${error.message}`);
+            });
+        }
+        
+        function handleConnectionError(errorMessage) {
+            logEvent(errorMessage, 'error');
+            updateConnectionStatus('Bağlantı Hatası', 'error');
+            if (!state.simulationInterval) startSimulation();
+        }
+
+        function startSimulation() {
+            if (state.simulationInterval) return;
+            if (state.unsubscribe) state.unsubscribe();
+            logEvent('Simülasyon modu başlatıldı.', 'warn');
+            const run = () => {
+                const simulatedData = {
+                    light: Math.floor(Math.random() * 4095), soil: Math.floor(Math.random() * 4095),
+                    temperature: (15 + Math.random() * 15).toFixed(1), humidity: (30 + Math.random() * 60).toFixed(1),
+                    airQuality: 300 + Math.floor(Math.random() * 1000), tds: 50 + Math.floor(Math.random() * 200),
+                    rain: Math.floor(1000 + Math.random() * 3095)
+                };
+                updateConnectionStatus('SML Mode', 'warn');
+                updateUI(simulatedData);
+            };
+            run();
+            state.simulationInterval = setInterval(run, 2000);
+        }
+
+        function initializeNavigation() {
+            DOMElements.navLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    if (state.clickSynth) state.clickSynth.triggerAttackRelease("C2", "8n");
+                    const targetId = link.getAttribute('href');
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        DOMElements.navLinks.forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+            document.querySelector('.nav-link[href="#overview"]')?.classList.add('active');
+            
+            DOMElements.modalTriggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const modalId = trigger.dataset.modalId;
+                    document.getElementById(modalId)?.classList.add('active');
+                });
+            });
+
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay || e.target.classList.contains('modal-close-btn')) {
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        function updateUI(data) {
+            const now = new Date().toLocaleTimeString('tr-TR');
+            const updateText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = value;
+            };
+
+            const lightPercent = convertToPercentage(data.light);
+            const soilPercent = convertToPercentage(data.soil, true);
+            const temp = parseFloat(data.temperature).toFixed(1);
+            const airQuality = parseInt(data.airQuality);
+            const tds = parseInt(data.tds);
+            const rainStatus = getRainStatus(data.rain);
+
+            updateText('light-value', `${lightPercent}<span class="unit">%</span>`);
+            updateText('soil-value', `${soilPercent}<span class="unit">%</span>`);
+            updateText('temperature-value', `${temp}<span class="unit">°C</span>`);
+            updateText('air-quality-value', `${airQuality}<span class="unit">PPM</span>`);
+            updateText('tds-value', `${tds}<span class="unit">ppm</span>`);
+            updateText('rain-value', rainStatus);
+            updateText('rain-garden-volume', `${(soilPercent * 0.5).toFixed(1)} L`);
+            updateText('microalgae-volume', `1.0 L`);
+
+            Object.keys(state.charts).forEach(key => {
+                const chartDataMap = { light: lightPercent, soil: soilPercent, temperature: temp, airQuality: airQuality };
+                updateChart(state.charts[key], now, chartDataMap[key]);
+            });
+            
+            updateDynamicStats(data);
+            updateStatusCards(soilPercent, airQuality);
+        }
+
+        function updateDynamicStats(data) {
+            const timeDiff = (Date.now() - state.lastUpdateTime) / 1000;
+            if (getRainStatus(data.rain) !== "Açık") state.totalWaterCollected += 0.01 * timeDiff;
+            if (data.airQuality > 800) state.totalCo2Reduced += (data.airQuality / 1000000) * timeDiff;
+            state.lastUpdateTime = Date.now();
+            const filterRate = Math.max(95.0, 99.8 - (data.tds / 25)).toFixed(1);
+
+            document.getElementById('stats-water-collected').textContent = `${state.totalWaterCollected.toFixed(1)} L`;
+            document.getElementById('stats-co2-reduced').textContent = `${state.totalCo2Reduced.toFixed(2)} kg`;
+            document.getElementById('stats-filter-rate').textContent = `${filterRate} %`;
+        }
+        
+        function updateStatusCards(soilPercent, airQuality) {
+            const waterStatusText = document.getElementById('water-status-text');
+            const waterStatusIcon = document.getElementById('water-status-icon');
+            if (soilPercent < 30) {
+                waterStatusText.textContent = `Toprak çok kuru (%${soilPercent}). Sulama gerekli.`;
+                waterStatusIcon.className = 'fas fa-exclamation-triangle status-crit';
+            } else {
+                waterStatusText.textContent = `Toprak nemi ideal seviyede (%${soilPercent}).`;
+                waterStatusIcon.className = 'fas fa-hand-holding-droplet status-ok';
+            }
+            
+            const airStatusText = document.getElementById('air-status-text');
+            const airStatusIcon = document.getElementById('air-status-icon');
+            if (airQuality > 1500) {
+                airStatusText.textContent = `Hava kalitesi düşük (${airQuality} PPM). Biyoreaktör aktif.`;
+                airStatusIcon.className = 'fas fa-lungs-virus status-crit';
+            } else {
+                airStatusText.textContent = `Hava kalitesi iyi (${airQuality} PPM).`;
+                airStatusIcon.className = 'fas fa-lungs status-ok';
+            }
+        }
+
+        function updateConnectionStatus(message, type) {
+            const lightEl = DOMElements.statusLightTerminal;
+            const textEl = DOMElements.statusElTerminal;
+            lightEl.className = `status-light ${type}`;
+            textEl.textContent = message;
+        }
+
+        function initializeCharts() {
+            state.charts.light = createChart('light-chart', '#f39c12');
+            state.charts.soil = createChart('soil-chart', '#8c6a4d');
+            state.charts.temperature = createChart('temperature-chart', '#e74c3c');
+            state.charts.airQuality = createChart('air-quality-chart', '#9b59b6');
+            logEvent('Grafikler oluşturuldu.');
+        }
+        function createChart(ctxId, color) {
+            const ctx = document.getElementById(ctxId)?.getContext('2d');
+            if (!ctx) return null;
+            return new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [{ data: [], borderColor: color, borderWidth: 2.5, fill: true, backgroundColor: 'rgba(44, 62, 80, 0.2)', tension: 0.4, pointRadius: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+            });
+        }
+        function updateChart(chart, label, newData) {
+            if (!chart || !chart.data) return;
+            chart.data.labels.push(label);
+            chart.data.datasets[0].data.push(newData);
+            if (chart.data.labels.length > 20) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+            chart.update('none');
+        }
+        
+        async function updateWeatherTable() {
+            const cities = ['Istanbul', 'Ankara', 'Izmir', 'Antalya', 'Trabzon'];
+            DOMElements.weatherTableBody.innerHTML = ''; 
+            logEvent('Hava durumu verileri çekiliyor...');
+            const weatherIconMap = { "Sunny": 'fa-sun', "Clear": 'fa-moon', "Partly cloudy": 'fa-cloud-sun', "Cloudy": 'fa-cloud', "Overcast": 'fa-cloud', "Mist": 'fa-smog', "Patchy rain possible": 'fa-cloud-sun-rain', "Light rain": 'fa-cloud-rain', "Heavy rain": 'fa-cloud-showers-heavy' };
+
+            for (const city of cities) {
+                try {
+                    const response = await fetch(`https://wttr.in/${city}?format=j1`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const data = await response.json();
+                    const condition = data.current_condition[0];
+                    const desc = condition.weatherDesc[0].value;
+                    const iconKey = Object.keys(weatherIconMap).find(key => desc.includes(key)) || "Cloudy";
+                    const row = `<tr><td style="text-align:left;">${data.nearest_area[0].areaName[0].value}</td><td><i class="fas ${weatherIconMap[iconKey]}"></i> ${desc}</td><td>${condition.temp_C} °C</td><td>${condition.humidity} %</td><td>${(condition.windspeedKmph / 3.6).toFixed(1)} m/s</td></tr>`;
+                    DOMElements.weatherTableBody.innerHTML += row;
+                } catch (error) {
+                    DOMElements.weatherTableBody.innerHTML += `<tr><td style="text-align:left;">${city}</td><td colspan="4" style="color:var(--warning-color);">Veri alınamadı</td></tr>`;
+                }
+            }
+            logEvent('Hava durumu tablosu güncellendi.');
+        }
+
+        function updateUsageStats() {
+            document.getElementById('stats-daily-users').textContent = Math.floor(20 + Math.random() * 15);
+            document.getElementById('stats-session-time').textContent = (10 + Math.random() * 5).toFixed(1) + ' dk';
+            document.getElementById('stats-popular-tab').textContent = ['Grafikler', 'Durum', 'Genel Bakış'][Math.floor(Math.random()*3)];
+        }
+        
+        function logEvent(message, type = 'info') {
+            const colorMap = { info: 'var(--text-color)', warn: 'var(--warning-color)', error: 'var(--critical-color)' };
+            const createLogEntry = () => `<div class="log-entry"><span class="log-time">${new Date().toLocaleTimeString()}</span> <span style="color: ${colorMap[type]}">${message}</span></div>`;
+            if (DOMElements.logOutputTerminal) DOMElements.logOutputTerminal.innerHTML += createLogEntry();
+            if (DOMElements.logOutputTerminal) DOMElements.logOutputTerminal.scrollTop = DOMElements.logOutputTerminal.scrollHeight;
+        }
+
+        function initializeAudio() {
+            state.clickSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination();
+            
+            const startMusic = async () => {
+                await Tone.start();
+                DOMElements.bgMusic.play();
+                DOMElements.musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                state.isMusicPlaying = true;
+                logEvent('Müzik başlatıldı.');
+                document.body.removeEventListener('click', startMusic);
+            };
+            document.body.addEventListener('click', startMusic, { once: true });
+
+            DOMElements.musicBtn.addEventListener('click', () => {
+                if (state.isMusicPlaying) {
+                    DOMElements.bgMusic.pause();
+                    DOMElements.musicBtn.innerHTML = '<i class="fas fa-volume-off"></i>';
+                } else {
+                    DOMElements.bgMusic.play();
+                    DOMElements.musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                }
+                state.isMusicPlaying = !state.isMusicPlaying;
+            });
+            logEvent('Ses sistemi hazır.');
+        }
+
+        const convertToPercentage = (value, inverted = false) => {
+            const numValue = parseInt(value, 10);
+            if (isNaN(numValue)) return 0;
+            return Math.round(inverted ? 100 - (numValue / 4095 * 100) : (numValue / 4095 * 100));
+        };
+
+        const getRainStatus = (value) => {
+            const numValue = parseInt(value, 10);
+            if (isNaN(numValue) || numValue > 3500) return "Açık";
+            if (numValue > 2500) return "Çiseleme";
+            return "Yağmurlu";
+        };
+    </script>
+</body>
+</html>
