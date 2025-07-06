@@ -357,7 +357,7 @@
         }
 
         function startRealtimeListener() {
-            const docPath = `ecoscycle-default/public/data/device/live/live`; // FIX: Corrected path
+            const docPath = `ecoscycle-default/public/data/device/live`; // FIX: Corrected path
             logEvent(`Veri dinleyicisi başlatıldı: ${docPath}`);
             state.unsubscribe = onSnapshot(doc(state.db, docPath), (docSnap) => {
                 if (!state.hasReceivedRealData) {
